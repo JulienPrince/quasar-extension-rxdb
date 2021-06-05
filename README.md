@@ -26,10 +26,6 @@ quasar ext remove @jdao/plugin-rxdb
 
 > Add other information that's not as important to know
 
-# Donate
-
-If you appreciate the work that went into this App Extension, please consider [donating to Sowell](https://sowellapp.com).
-
 # License
 
 MIT (c) Julien Prince <prince.julienh@gmail.com>
