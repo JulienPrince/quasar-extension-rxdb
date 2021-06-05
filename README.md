@@ -3,7 +3,7 @@
 # Install
 
 ```bash
-quasar ext add @prince/plugin-rxdb
+quasar ext add @jdao/plugin-rxdb
 ```
 
 Quasar CLI will retrieve it from NPM and install the extension.
@@ -15,7 +15,7 @@ Quasar CLI will retrieve it from NPM and install the extension.
 # Uninstall
 
 ```bash
-quasar ext remove @prince/plugin-rxdb
+quasar ext remove @jdao/plugin-rxdb
 ```
 
 # Info

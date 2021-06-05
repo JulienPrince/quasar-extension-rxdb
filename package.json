@@ -1,5 +1,5 @@
 {
-  "name": "@prince/quasar-app-extension-plugin-rxdb",
+  "name": "@jdao/quasar-app-extension-plugin-rxdb",
   "version": "0.0.1",
   "description": "A Quasar App Extension for RxDB",
   "author": "Julien Prince <prince.julienh@gmail.com>",
