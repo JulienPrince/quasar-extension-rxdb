@@ -3,7 +3,7 @@
 # Install
 
 ```bash
-quasar ext add @sowell/rxdb
+quasar ext add @prince/plugin-rxdb
 ```
 
 Quasar CLI will retrieve it from NPM and install the extension.
@@ -15,7 +15,7 @@ Quasar CLI will retrieve it from NPM and install the extension.
 # Uninstall
 
 ```bash
-quasar ext remove @sowell/rxdb
+quasar ext remove @prince/plugin-rxdb
 ```
 
 # Info
