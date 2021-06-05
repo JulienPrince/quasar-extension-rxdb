@@ -1,102 +1,102 @@
-import { createRxDatabase, addRxPlugin } from "rxdb";
+import { createRxDatabase, addRxPlugin } from "rxdb"
 
-import { SubscriptionClient } from "subscriptions-transport-ws";
+import { SubscriptionClient } from "subscriptions-transport-ws"
 
-import { RxDBValidatePlugin } from "rxdb/plugins/validate";
-import * as PouchdbAdapterIdb from "pouchdb-adapter-idb";
-import { RxDBReplicationPlugin } from "rxdb/plugins/replication";
-import { RxDBQueryBuilderPlugin } from "rxdb/plugins/query-builder";
-import { RxDBUpdatePlugin } from "rxdb/plugins/update";
-import { RxDBReplicationGraphQLPlugin } from "rxdb/plugins/replication-graphql";
+import { RxDBValidatePlugin } from "rxdb/plugins/validate"
+import * as PouchdbAdapterIdb from "pouchdb-adapter-idb"
+import { RxDBReplicationPlugin } from "rxdb/plugins/replication"
+import { RxDBQueryBuilderPlugin } from "rxdb/plugins/query-builder"
+import { RxDBUpdatePlugin } from "rxdb/plugins/update"
+import { RxDBReplicationGraphQLPlugin } from "rxdb/plugins/replication-graphql"
 
-import { setupQuery, subscribe } from "./utils";
-import { useStore } from "vuex";
+import { setupQuery, subscribe } from "./utils"
+import { useStore } from "vuex"
 
 //plugins used By RxDb
-addRxPlugin(RxDBReplicationGraphQLPlugin);
-addRxPlugin(RxDBQueryBuilderPlugin);
-addRxPlugin(RxDBValidatePlugin);
-addRxPlugin(RxDBReplicationPlugin);
-addRxPlugin(PouchdbAdapterIdb);
-addRxPlugin(RxDBUpdatePlugin);
+addRxPlugin(RxDBReplicationGraphQLPlugin)
+addRxPlugin(RxDBQueryBuilderPlugin)
+addRxPlugin(RxDBValidatePlugin)
+addRxPlugin(RxDBReplicationPlugin)
+addRxPlugin(PouchdbAdapterIdb)
+addRxPlugin(RxDBUpdatePlugin)
 
-let localDB = null;
-let collections = [];
-let replicationStates = [];
-let wsClient = null;
-let collectionsName = [];
+let localDB = null
+let collections = []
+let replicationStates = []
+let wsClient = null
+let collectionsName = []
 //TODO: make URLWEBSOCKET and SYNCURL on prompts variable
-const URLWEBSOCKET = "wss://rested-woodcock-48.hasura.app/v1/graphql";
-const SYNCURL = "https://rested-woodcock-48.hasura.app/v1/graphql";
+const URLWEBSOCKET = "wss://rested-woodcock-48.hasura.app/v1/graphql"
+const SYNCURL = "https://rested-woodcock-48.hasura.app/v1/graphql"
 
-let queryBuilders = null;
-let schema = null;
-let userToken = null;
+let queryBuilders = null
+let schema = null
+let userToken = null
 
 export default function rxdb() {
-  const store = useStore();
+  const store = useStore()
 
   function initRxdb(querys, collectionSchema) {
-    queryBuilders = querys;
-    schema = collectionSchema;
+    queryBuilders = querys
+    schema = collectionSchema
   }
 
   async function createDb() {
-    const { token, name } = store.getters["rxdb/getUser"];
-    userToken = token;
+    const { token, name } = store.getters["rxdb/getUser"]
+    userToken = token
     if (name !== undefined) {
-      console.log("DatabaseService: creating database..");
+      console.log("DatabaseService: creating database..")
       const dataBase = await createRxDatabase({
         name: `sw_${name}`,
         adapter: "idb",
         ignoreDuplicate: true,
-      });
-      console.log("DatabaseService: created database");
+      })
+      console.log("DatabaseService: created database")
       // Add name and create collection
       Object.entries(schema).map(async ([key, value]) => {
-        const obj = {};
+        const obj = {}
         obj[key] = {
           schema: value,
-        };
-        collectionsName.push(key);
-        collections.push(await dataBase.addCollections(obj));
-      });
-      localDB = dataBase;
-      return dataBase;
+        }
+        collectionsName.push(key)
+        collections.push(await dataBase.addCollections(obj))
+      })
+      localDB = dataBase
+      return dataBase
     } else {
-      throw "database must have a name";
+      throw "database must have a name"
     }
   }
 
   function getDB() {
     if (localDB !== null) {
-      return localDB;
+      return localDB
     } else {
-      throw "Database doesn't exist";
+      throw "Database doesn't exist"
     }
   }
 
   function getCollection(name) {
     if (name !== undefined) {
-      let collection = null;
+      let collection = null
       collections.findIndex((coll, index) => {
         for (let [key, value] of Object.entries(coll)) {
           if (key === name) {
-            collection = value;
+            collection = value
           }
         }
-      });
+      })
       if (name !== null) {
-        return collection;
+        return collection
       } else {
-        throw `collection "${name}" doesn't exist `;
+        throw `collection "${name}" doesn't exist `
       }
     }
   }
 
   function initReplication() {
     if (!replicationStates.length) {
-      const batchSize = 5;
+      const batchSize = 5
       wsClient = new SubscriptionClient(URLWEBSOCKET, {
         reconnect: true,
         connectionParams: {
@@ -105,15 +105,15 @@ export default function rxdb() {
           },
         },
         connectionCallback: () => {
-          console.log("SubscriptionClient.connectionCallback:");
+          console.log("SubscriptionClient.connectionCallback:")
         },
-      });
+      })
       collectionsName.map(async (name) => {
-        const collection = getCollection(name);
+        const collection = getCollection(name)
         const { subQuery, pullQueryBuilder, pushQueryBuilder } = setupQuery(
           queryBuilders,
-          name,
-        );
+          name
+        )
 
         if (collection) {
           const replicationState = await collection.syncGraphQL({
@@ -132,28 +132,28 @@ export default function rxdb() {
             live: true,
             liveInterval: 1000 * 60 * 60,
             deletedFlag: "deleted",
-          });
-          replicationStates.push(replicationState);
-          subscribe(replicationState, subQuery, wsClient);
+          })
+          replicationStates.push(replicationState)
+          subscribe(replicationState, subQuery, wsClient)
         } else {
-          throw "error replication verify your name of collection";
+          throw "error replication verify your name of collection"
         }
-      });
+      })
     }
   }
 
   function stopReplication() {
     if (replicationStates.length && wsClient !== null) {
       replicationStates.map((replication) => {
-        replication.cancel();
-      });
-      wsClient.close();
-      collectionsName = [];
-      replicationStates = [];
-      wsClient = null;
-      localDB = null;
+        replication.cancel()
+      })
+      wsClient.close()
+      collectionsName = []
+      replicationStates = []
+      wsClient = null
+      localDB = null
     } else {
-      throw "No replication state";
+      throw "No replication state"
     }
   }
 
@@ -165,5 +165,5 @@ export default function rxdb() {
     stopReplication,
     initRxdb,
     store: store,
-  };
+  }
 }
