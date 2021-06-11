@@ -3,5 +3,5 @@
   "tabWidth": 2,
   "singleQuote": false,
   "arrowParens": "always",
-  "insert_final_newline": true
+  "trailingComma": "none"
 }
