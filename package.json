@@ -1,6 +1,6 @@
 {
   "name": "@jdao/quasar-app-extension-plugin-rxdb",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Quasar App Extension for RxDB",
   "author": "Julien Prince <prince.julienh@gmail.com>",
   "license": "MIT",

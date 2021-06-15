@@ -1,6 +1,4 @@
-import { boot } from "quasar/wrappers"
-import prompts from "quasar.extensions.json"
-
-export default boot(({ app, router }) => {
+import prompts from '../../../../../quasar.extensions.json'
+export default async ({ app }) => {
   app.provide('propmts', prompts)
-})
+}

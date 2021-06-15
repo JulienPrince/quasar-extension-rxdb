@@ -29,7 +29,6 @@ let collectionsName = [];
 
 let queryBuilders = null;
 let schema = null;
-let userToken = null;
 
 export default function rxdb() {
   const prompts = inject('propmts');
@@ -41,8 +40,8 @@ export default function rxdb() {
   }
 
   async function createDb() {
-    const { token, name } = store.getters["rxdb/getUser"];
-    userToken = token;
+    const { "@jdao/rxdb": { vuex_getters_db_name }} = prompts;
+    const name  = store.getters[vuex_getters_db_name];
     if (name !== undefined) {
       console.log("DatabaseService: creating database..");
       const dataBase = await createRxDatabase({
@@ -95,13 +94,15 @@ export default function rxdb() {
 
   function initReplication() {
     if (!replicationStates.length) {
-      const { "@sowell/rxdb": { urlWebsocket, urlServer }} = prompts;
+      const { "@jdao/rxdb": { server_graphql_base_url_subscription, server_graphql_base_url, vuex_getters_token }} = prompts;
+      const token = store.getters[vuex_getters_token];
+
       const batchSize = 5;
-      wsClient = new SubscriptionClient(urlWebsocket, {
+      wsClient = new SubscriptionClient(server_graphql_base_url_subscription, {
         reconnect: true,
         connectionParams: {
           headers: {
-            Authorization: `Bearer ${userToken}`,
+            Authorization: `Bearer ${token}`,
           },
         },
         connectionCallback: () => {
@@ -117,9 +118,9 @@ export default function rxdb() {
 
         if (collection) {
           const replicationState = await collection.syncGraphQL({
-            url: urlServer,
+            url: server_graphql_base_url,
             headers: {
-              Authorization: `Bearer ${userToken}`,
+              Authorization: `Bearer ${token}`,
             },
             pull: {
               batchSize,

@@ -15,18 +15,18 @@ module.exports = function () {
       default: 'wss://localhost'
     },
     {
-      name: 'vuex_set_token_getters',
+      name: 'vuex_getters_token',
       type: 'input',
       required: true,
       message: "Vuex getter token information",
       default: 'rxdb/getToken'
     },
     {
-      name: 'vuex_set_db_name_getters',
+      name: 'vuex_getters_db_name',
       type: 'input',
       required: true,
       message: "Vuex getter db name information",
-      default: 'auth/getDbName'
+      default: 'rxdb/getDbName'
     }
   ]
 }
