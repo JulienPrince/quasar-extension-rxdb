@@ -1,7 +1,9 @@
 function extendConf(conf) {
   // register our boot file
-  conf.boot.push("~@jdao/quasar-app-extension-plugin-rxdb/src/boot/register.js");
-  conf.build.transpileDependencies.push(/quasar-app-extension-rxdb[\\/]src/);
+  conf.boot.push("~@jdao/quasar-app-extension-plugin-rxdb/src/boot/index.js");
+  conf.build.transpileDependencies.push(
+    /quasar-app-extension-plugin-rxdb[\\/]src/,
+  );
 }
 
 const chainWebpack = (ctx, chain) => {
