@@ -114,11 +114,12 @@ export default function rxdb() {
           },
         },
         connectionCallback: () => {
-          console.log("SubscriptionClient.connectionCallback:");
+          console.log(
+            "SubscriptionClient.connectionCallback: connexion sucess",
+          );
         },
       });
       collectionsName.map(async (name) => {
-        console.log("name", name);
         const collection = getCollection(name);
         const { subQuery, pullQueryBuilder, pushQueryBuilder } = setupQuery(
           queryBuilders,
